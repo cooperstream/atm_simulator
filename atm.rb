@@ -1,4 +1,4 @@
-class ATM
+class ATM.
  def start(config)
     customer=Customer.new
     account = customer.get_account
@@ -159,7 +159,7 @@ class Transaction
  end
 end
  
-config = {"banknotes"=>{500=>0, 200=>0, 100=>2, 50=>1, 20=>2, 10=>4, 5=>1, 2=>0, 1=>2}, "accounts"=>{3321=>{"name"=>"Volodymyr", "password"=>"mypass", "balance"=>422}, 5922=>{"name"=>"Iryna", "password"=>"ho#ll_ง1", "balance"=>5301}}}
+config = {"banknotes"=>{500=>0, 200=>0, 100=>2, 50=>1, 20=>2, 10=>4, 5=>1, 2=>0, 1=>2}, "accounts"=>{3321=>{"name"=>"Volodymyr", "password"=>"mypass", "balance"=>422}, 5922=>{"name"=>"Iryna", "password"=>"ho#ll_ยง1", "balance"=>5301}}}
 
 atm=ATM.new
 
