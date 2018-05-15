@@ -1,4 +1,4 @@
-class ATM
+class ATM...
  def start(config)
     customer=Customer.new
     account = customer.get_account
