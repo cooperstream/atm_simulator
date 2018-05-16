@@ -1,3 +1,4 @@
+
 ﻿# encoding: UTF-8
 
 class ATM
@@ -194,9 +195,11 @@ class Transaction
      end 
       customer.balance-= amount
  end
+
 end 
 
-config = {"banknotes"=>{500=>0, 200=>0, 100=>2, 50=>1, 20=>2, 10=>4, 5=>1, 2=>0, 1=>2}, "accounts"=>{3321=>{"name"=>"Volodymyr", "password"=>"mypass", "balance"=>422}, 5922=>{"name"=>"Iryna", "password"=>"1111", "balance"=>5301}}}
+
+config = {"banknotes"=>{500=>0, 200=>0, 100=>2, 50=>1, 20=>2, 10=>4, 5=>1, 2=>0, 1=>2}, "accounts"=>{3321=>{"name"=>"Volodymyr", "password"=>"mypass", "balance"=>422}, 5922=>{"name"=>"Iryna", "password"=>"ho#ll_§1", "balance"=>5301}}}
 
 atm = ATM.new("")
 atm.start(config)
