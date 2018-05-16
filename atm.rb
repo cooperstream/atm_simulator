@@ -1,5 +1,4 @@
-
-﻿# encoding: UTF-8
+# encoding: UTF-8
 
 class ATM
     
@@ -88,8 +87,7 @@ class Customer
  end
  
  def existing_account?(config,account)
-       return true if config['accounts'].has_key?(account)
-       false
+      config['accounts'].has_key?(account)
  end
  
  def get_password
@@ -99,8 +97,7 @@ class Customer
  end
  
  def verified_password?(config,account,password)
-     return true if config['accounts'][account]['password'] == password
-     false
+     config['accounts'][account]['password'] == password
  end
  
  def get_name(config,account)
@@ -108,7 +105,7 @@ class Customer
  end
  
  def get_balance(config,account)
-    balance = config['accounts'][account]['balance']
+     balance = config['accounts'][account]['balance']
  end
  
 end
@@ -127,20 +124,18 @@ class Transaction
  end
 
  def sufficient_atm_balance?(amount,atm)
-     return true if atm.balance(banknotes) >= amount
-     false
+     atm.balance(banknotes) >= amount
  end
 
  def sufficient_customer_balance?(amount,customer)
-     return true if customer.balance >= amount
-     false
+     customer.balance >= amount
  end
 
  def can_be_composed?(amount,atm)
      denomination = atm.banknotes.keys
      quantity = atm.banknotes.values
      unpaid_amount = amount
-     (0..8).each do |i|
+     (0..atm.banknotes).each do |i|
      issued_banknotes = (unpaid_amount-unpaid_amount%denomination[i])/denomination[i]
      if issued_banknotes <= quantity[i]
       unpaid_amount-= denomination[i]*issued_banknotes
@@ -148,13 +143,12 @@ class Transaction
       unpaid_amount-= denomination[i]*quantity[i]
      end  
     end 
-   return true if unpaid_amount == 0
-          false
+     unpaid_amount == 0
  end
 
  def check(amount,atm,customer)
      if !sufficient_atm_balance?(amount,atm)
-         print "ERROR: THE MAXIMUM AMOUNT AVAILABLE IN THIS ATM IS ?#{atm_balance(config)}. PLEASE ENTER A DIFFERENT AMOUNT:"
+         print "ERROR: THE MAXIMUM AMOUNT AVAILABLE IN THIS ATM IS ?#{atm.balance}. PLEASE ENTER A DIFFERENT AMOUNT:"
          get_amount
          check(amount,atm,customer)
      else
@@ -180,7 +174,7 @@ class Transaction
      denomination = atm.banknotes.keys
      quantity = atm.banknotes.values
      unpaid_amount = amount
-     (0..8).each do |i|
+     (0..atm.banknotes).each do |i|
      issued_banknotes = (unpaid_amount-unpaid_amount%denomination[i])/denomination[i]
      if issued_banknotes <= quantity[i]
       unpaid_amount-= denomination[i]*issued_banknotes
@@ -190,7 +184,7 @@ class Transaction
       quantity[i] = 0
      end  
     end 
-     (0..8).each do |i|
+     (0..atm.banknotes).each do |i|
       atm.banknotes[i] = quantity[i]
      end 
       customer.balance-= amount
