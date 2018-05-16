@@ -35,7 +35,7 @@ class ATM
   denomination = banknotes.keys
   quantity = banknotes.values
   balance = 0
-    (0..8).each do |i|
+    (0..atm.banknotes).each do |i|
      balance+= denomination[i]*quantity[i]
     end
   balance
