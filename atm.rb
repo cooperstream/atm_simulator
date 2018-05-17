@@ -14,8 +14,6 @@ def start(config)
        puts "Hello, #{customer.name}!"
        atm.menu(config, customer, transaction)
      else
-       puts customer.password.inspect
-       puts config['accounts'][customer.account]['password'].inspect
        puts "ERROR: ACCOUNT NUMBER AND PASSWORD DON'T MATCH"
        start(config)
      end
