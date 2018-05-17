@@ -1,8 +1,8 @@
 # encoding: UTF-8
 require 'yaml'
 def start(config)
-  atm = ATM.new("")
-  customer = Customer.new("", "", "", "")
+  atm = ATM.new()
+  customer = Customer.new()
   transaction = Transaction.new
   atm.banknotes = atm.get_banknotes(config)
   customer.account = customer.get_account
@@ -13,10 +13,14 @@ def start(config)
        customer.balance = customer.get_balance(config, customer.account)
        puts "Hello, #{customer.name}!"
        atm.menu(config, customer, transaction)
-     else puts "ERROR: ACCOUNT NUMBER AND PASSWORD DON'T MATCH"
+     else
+       puts customer.password.inspect
+       puts config['accounts'][customer.account]['password'].inspect
+       puts "ERROR: ACCOUNT NUMBER AND PASSWORD DON'T MATCH"
        start(config)
      end
-   else puts "ERROR: ACCOUNT NUMBER NOT FOUND"
+   else
+     puts "ERROR: ACCOUNT NUMBER NOT FOUND"
      start(config)
    end
  end
@@ -25,7 +29,7 @@ class ATM
 
  attr_accessor :banknotes
 
- def initialize(banknotes)
+ def initialize(banknotes= "")
   @banknotes = banknotes
  end
 
@@ -71,7 +75,7 @@ class Customer
 
  attr_accessor :account, :password, :name, :balance
 
- def initialize(account, password, name, balance)
+ def initialize(account = " ", password = " " , name= " ", balance= " ")
   @accont = account
   @password = password
   @name = name
