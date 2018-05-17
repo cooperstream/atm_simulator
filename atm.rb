@@ -3,14 +3,11 @@
 def start
   # config = YAML.load_file(ARGV.first || 'config.yml')
   config = {"banknotes"=>{500=>0, 200=>0, 100=>2, 50=>1, 20=>2, 10=>4, 5=>1, 2=>0, 1=>2}, "accounts"=>{3321=>{"name"=>"Volodymyr", "password"=>"mypass", "balance"=>422}, 5922=>{"name"=>"Iryna", "password"=>"ho#ll_1", "balance"=>5301}}}
-
 	atm = ATM.new("")
   customer = Customer.new("","","","")
   transaction = Transaction.new
-
 	atm.banknotes = atm.get_banknotes(config)
   customer.account = customer.get_account
-
 	 if customer.existing_account?(config,customer.account)
     customer.password = customer.get_password
       if customer.verified_password?(config,customer.account,customer.password)
@@ -24,9 +21,7 @@ def start
    else puts "ERROR: ACCOUNT NUMBER NOT FOUND"
     start
    end
-
  end
-
 
 class ATM
 
@@ -73,8 +68,6 @@ class ATM
   end
 
 end
-
-
 
 class Customer
 
@@ -176,7 +169,6 @@ class Transaction
    denomination = atm.banknotes.keys
    quantity = atm.banknotes.values
    unpaid_amount = amount
-
      (0..8).each do |i|
        issued_banknotes = (unpaid_amount-unpaid_amount%denomination[i])/denomination[i]
        if issued_banknotes <= quantity[i]
@@ -187,7 +179,6 @@ class Transaction
           quantity[i] = 0
        end
      end
-
   (0..8).each do |i|
    atm.banknotes[denomination[i]] = quantity[i]
    end
