@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'yaml'
+
 def start(config)
   atm = ATM.new()
   customer = Customer.new()
@@ -23,6 +24,12 @@ def start(config)
    end
  end
 
+class String
+   def is_integer?
+     self.to_i.to_s == self
+   end
+end
+
 class ATM
 
  attr_accessor :banknotes
@@ -39,7 +46,7 @@ class ATM
   denomination = banknotes.keys
   quantity = banknotes.values
   balance = 0
-    (0..8).each do |i|
+    (0..denomination.length-1).each do |i|
       balance+= denomination[i]*quantity[i]
      end
   balance
@@ -56,7 +63,7 @@ class ATM
           puts "Your Current Balance is $#{customer.balance}"
           menu(config,customer, transaction)
        when(2)
-          print "Enter Amount You Wish to Withdraw: "
+          puts "Enter Amount You Wish to Withdraw: "
           transaction.check(config, self, customer)
        when(3)
           puts "#{customer.name}, Thank You For Using Our ATM. Good-Bye!"
@@ -81,10 +88,14 @@ class Customer
  end
 
  def get_account
-   # verify valid data type
-   print "Please Enter Your Account Number: "
-   acc = gets
-   account = acc.to_i
+   puts "Please Enter Your Account Number: "
+   acc = gets.chomp
+   if acc.is_integer?
+     account = acc.to_i
+   else
+     puts "ERROR: ACCOUNT MUST BE AN INTEGER. PLEASE ENTER A DIFFERENT ACCOUNT:"
+     get_account
+   end
  end
 
  def existing_account?(config, account)
@@ -92,8 +103,7 @@ class Customer
  end
 
  def get_password
-   #verify valid data type
-   print "Please Enter Your Password: "
+   puts "Please Enter Your Password: "
    pass = gets
    pasword = pass.chomp
  end
@@ -115,9 +125,13 @@ end
 class Transaction
 
  def get_amount
-   #verify valid data type
-   am = gets
-   amount = am.to_i
+   am = gets.chomp
+   if am.is_integer?
+     amount = am.to_i
+   else
+     puts "ERROR: AMOUNT MUST BE AN INTEGER. PLEASE ENTER A DIFFERENT AMOUNT:"
+     get_amount
+   end
  end
 
  def sufficient_atm_balance?(amount, atm)
@@ -132,7 +146,7 @@ class Transaction
    denomination = atm.banknotes.keys
    quantity = atm.banknotes.values
    unpaid_amount = amount
-     (0..8).each do |i|
+     (0..denomination.length-1).each do |i|
        issued_banknotes = (unpaid_amount-unpaid_amount%denomination[i])/denomination[i]
         if issued_banknotes <= quantity[i]
           unpaid_amount-= denomination[i]*issued_banknotes
@@ -146,15 +160,15 @@ class Transaction
  def check(config, atm, customer)
    amount = get_amount
      if !sufficient_atm_balance?(amount, atm)
-       print "ERROR: THE MAXIMUM AMOUNT AVAILABLE IN THIS ATM IS $#{atm.balance}. PLEASE ENTER A DIFFERENT AMOUNT:"
+       puts "ERROR: THE MAXIMUM AMOUNT AVAILABLE IN THIS ATM IS $#{atm.balance}. PLEASE ENTER A DIFFERENT AMOUNT:"
        check(config, atm, customer)
      else
         if !sufficient_customer_balance?(amount, customer)
-          print "ERROR: INSUFFICIENT FUNDS!! PLEASE ENTER A DIFFERENT AMOUNT:"
+          puts "ERROR: INSUFFICIENT FUNDS!! PLEASE ENTER A DIFFERENT AMOUNT:"
           check(config, atm, customer)
         else
            if !can_be_composed?(amount, atm)
-              print "ERROR: THE AMOUNT YOU REQUESTED CANNOT BE COMPOSED FROM BILLS AVAILABLE IN THIS ATM. PLEASE ENTER A DIFFERENT AMOUNT:"
+              puts "ERROR: THE AMOUNT YOU REQUESTED CANNOT BE COMPOSED FROM BILLS AVAILABLE IN THIS ATM. PLEASE ENTER A DIFFERENT AMOUNT:"
               check(config, atm, customer)
            else
               withdrawal(config, amount, atm, customer)
@@ -169,7 +183,7 @@ class Transaction
    denomination = atm.banknotes.keys
    quantity = atm.banknotes.values
    unpaid_amount = amount
-     (0..8).each do |i|
+     (0..denomination.length-1).each do |i|
        issued_banknotes = (unpaid_amount - unpaid_amount%denomination[i])/denomination[i]
        if issued_banknotes <= quantity[i]
           unpaid_amount-= denomination[i]*issued_banknotes
@@ -179,13 +193,12 @@ class Transaction
           quantity[i] = 0
        end
      end
-  (0..8).each do |i|
+  (0..denomination.length-1).each do |i|
    atm.banknotes[ denomination[i] ] = quantity[i]
    end
    customer.balance-= amount
    config['banknotes'] = atm.banknotes
    config['accounts'][customer.account]['balance'] = customer.balance
-   # update config.yml
  end
 
 end
