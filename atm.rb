@@ -2,25 +2,28 @@
 
 def start
    # config = YAML.load_file(ARGV.first || 'config.yml')
-     config = {"banknotes"=>{500=>0, 200=>0, 100=>2, 50=>1, 20=>2, 10=>4, 5=>1, 2=>0, 1=>2}, "accounts"=>{3321=>{"name"=>"Volodymyr", "password"=>"mypass", "balance"=>422}, 5922=>{"name"=>"Iryna", "password"=>"ho#ll_1", "balance"=>5301}}}
-    atm = ATM.new("")
+   config = {"banknotes"=>{500=>0, 200=>0, 100=>2, 50=>1, 20=>2, 10=>4, 5=>1, 2=>0, 1=>2}, "accounts"=>{3321=>{"name"=>"Volodymyr", "password"=>"mypass", "balance"=>422}, 5922=>{"name"=>"Iryna", "password"=>"ho#ll_1", "balance"=>5301}}}
+    
+	atm = ATM.new("")
     customer = Customer.new("","","","")
     transaction = Transaction.new
-    atm.banknotes = atm.get_banknotes(config)
-    customer.account = customer.get_account
-    if customer.existing_account?(config,customer.account)
+     
+	 atm.banknotes = atm.get_banknotes(config)
+     customer.account = customer.get_account
+     
+	 if customer.existing_account?(config,customer.account)
        customer.password = customer.get_password
-      if customer.verified_password?(config,customer.account,customer.password)
+        if customer.verified_password?(config,customer.account,customer.password)
           customer.name = customer.get_name(config,customer.account)
           customer.balance = customer.get_balance(config,customer.account)
-        puts "Hello, #{customer.name}!"
-        atm.menu(customer,transaction)
-      else puts "ERROR: ACCOUNT NUMBER AND PASSWORD DON'T MATCH"
-        start
-      end
-    else puts "ERROR: ACCOUNT NUMBER NOT FOUND"
-        start
-    end
+          puts "Hello, #{customer.name}!"
+          atm.menu(customer,transaction)
+        else puts "ERROR: ACCOUNT NUMBER AND PASSWORD DON'T MATCH"
+         start
+        end
+     else puts "ERROR: ACCOUNT NUMBER NOT FOUND"
+       start
+     end
  end
 
 
