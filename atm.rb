@@ -1,47 +1,52 @@
 # encoding: UTF-8
 
-class ATM
-    
- attr_accessor :banknotes
-
- def initialize(banknotes)
-  @banknotes = banknotes
- end   
-
- def start(config)
-    banknotes = get_banknotes(config)
+def start
+   # config = YAML.load_file(ARGV.first || 'config.yml')
+   config = {"banknotes"=>{500=>0, 200=>0, 100=>2, 50=>1, 20=>2, 10=>4, 5=>1, 2=>0, 1=>2}, "accounts"=>{3321=>{"name"=>"Volodymyr", "password"=>"mypass", "balance"=>422}, 5922=>{"name"=>"Iryna", "password"=>"ho#ll_1", "balance"=>5301}}}
+    atm = ATM.new("")
     customer = Customer.new("","","","")
-	   customer.account = customer.get_account
+    transaction = Transaction.new
+    atm.banknotes = atm.get_banknotes(config)
+    customer.account = customer.get_account
     if customer.existing_account?(config,customer.account)
        customer.password = customer.get_password
       if customer.verified_password?(config,customer.account,customer.password)
           customer.name = customer.get_name(config,customer.account)
           customer.balance = customer.get_balance(config,customer.account)
         puts "Hello, #{customer.name}!"
-        menu(customer)
+        atm.menu(customer,transaction)
       else puts "ERROR: ACCOUNT NUMBER AND PASSWORD DON'T MATCH"
-        start(config)
+        start
       end
     else puts "ERROR: ACCOUNT NUMBER NOT FOUND"
-        start(config)
+        start
     end
+ end
+
+
+class ATM
+    
+ attr_accessor :banknotes
+
+ def initialize(banknotes)
+  @banknotes = banknotes
  end
  
  def get_banknotes(config)
      banknotes = config['banknotes']
  end
  
- def balance(banknotes)
+ def balance
   denomination = banknotes.keys
   quantity = banknotes.values
   balance = 0
-    (0..atm.banknotes).each do |i|
+    (0..8).each do |i|
      balance+= denomination[i]*quantity[i]
     end
   balance
  end
 
- def menu(customer)
+ def menu(customer,transaction)
     puts "Please Choose From the Following Options:
     1. Display Balance
     2. Withdraw
@@ -49,19 +54,17 @@ class ATM
     choise = gets.to_i
     case(choise)
     when(1)
-     puts "Your Current Balance is ?#{customer.balance}"
-     menu(customer)
+     puts "Your Current Balance is $#{customer.balance}"
+     menu(customer,transaction)
     when(2)
      print "Enter Amount You Wish to Withdraw: "
-     transaction = Transaction.new("")
-     amount = transaction.get_amount
-     transaction.check(amount,atm,customer)
+     transaction.check(self,customer)
     when(3)
      puts "#{customer.name}, Thank You For Using Our ATM. Good-Bye!"
-     start(config)
+     start
     else
      puts "ERROR"
-     menu(customer)
+     menu(customer,transaction)
     end
  end
    
@@ -112,11 +115,7 @@ end
  
 class Transaction
     
- attr_accessor :amount
  
- def initialize(amount)
-  @amount = amount
- end  
  
  def get_amount
      am = gets
@@ -124,7 +123,7 @@ class Transaction
  end
 
  def sufficient_atm_balance?(amount,atm)
-     atm.balance(banknotes) >= amount
+     atm.balance >= amount
  end
 
  def sufficient_customer_balance?(amount,customer)
@@ -135,7 +134,7 @@ class Transaction
      denomination = atm.banknotes.keys
      quantity = atm.banknotes.values
      unpaid_amount = amount
-     (0..atm.banknotes).each do |i|
+     (0..8).each do |i|
      issued_banknotes = (unpaid_amount-unpaid_amount%denomination[i])/denomination[i]
      if issued_banknotes <= quantity[i]
       unpaid_amount-= denomination[i]*issued_banknotes
@@ -146,25 +145,23 @@ class Transaction
      unpaid_amount == 0
  end
 
- def check(amount,atm,customer)
+ def check(atm,customer)
+     amount = get_amount
      if !sufficient_atm_balance?(amount,atm)
-         print "ERROR: THE MAXIMUM AMOUNT AVAILABLE IN THIS ATM IS ?#{atm.balance}. PLEASE ENTER A DIFFERENT AMOUNT:"
-         get_amount
-         check(amount,atm,customer)
+         print "ERROR: THE MAXIMUM AMOUNT AVAILABLE IN THIS ATM IS $#{atm.balance}. PLEASE ENTER A DIFFERENT AMOUNT:"
+         check(atm,customer)
      else
          if !sufficient_customer_balance?(amount,customer)
              print "ERROR: INSUFFICIENT FUNDS!! PLEASE ENTER A DIFFERENT AMOUNT:"
-             get_amount
-             check(amount,atm,customer)
+             check(atm,customer)
          else 
              if !can_be_composed?(amount,atm)
                  print "ERROR: THE AMOUNT YOU REQUESTED CANNOT BE COMPOSED FROM BILLS AVAILABLE IN THIS ATM. PLEASE ENTER A DIFFERENT AMOUNT:"
-                 get_amount
-                 check(amount,atm,customer)
+                 check(atm,customer)
              else
                  withdrawal(amount,atm,customer)
-                 puts "Your New Balance is ?#{customer.balance}"
-                 menu(customer)
+                 puts "Your New Balance is $#{customer.balance}"
+                 atm.menu(customer,self)
              end
          end
      end
@@ -174,7 +171,7 @@ class Transaction
      denomination = atm.banknotes.keys
      quantity = atm.banknotes.values
      unpaid_amount = amount
-     (0..atm.banknotes).each do |i|
+     (0..8).each do |i|
      issued_banknotes = (unpaid_amount-unpaid_amount%denomination[i])/denomination[i]
      if issued_banknotes <= quantity[i]
       unpaid_amount-= denomination[i]*issued_banknotes
@@ -184,16 +181,14 @@ class Transaction
       quantity[i] = 0
      end  
     end 
-     (0..atm.banknotes).each do |i|
-      atm.banknotes[i] = quantity[i]
-     end 
+     
+      (0..8).each do |i|
+      atm.banknotes[denomination[i]] = quantity[i]
+      end
       customer.balance-= amount
- end
-
+	  
+	  # update config.yml
 end 
 
 
-config = {"banknotes"=>{500=>0, 200=>0, 100=>2, 50=>1, 20=>2, 10=>4, 5=>1, 2=>0, 1=>2}, "accounts"=>{3321=>{"name"=>"Volodymyr", "password"=>"mypass", "balance"=>422}, 5922=>{"name"=>"Iryna", "password"=>"ho#ll_§1", "balance"=>5301}}}
-
-atm = ATM.new("")
-atm.start(config)
+start
