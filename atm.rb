@@ -93,7 +93,7 @@ class Customer
    if acc.is_integer?
      account = acc.to_i
    else
-     puts "ERROR: ACCOUNT MUST BE AN INTEGER. PLEASE ENTER A DIFFERENT ACCOUNT:"
+     puts "ERROR: ACCOUNT NUMBER MUST BE AN INTEGER. PLEASE ENTER A DIFFERENT ACCOUNT NUMBER:"
      get_account
    end
  end
@@ -126,10 +126,10 @@ class Transaction
 
  def get_amount
    am = gets.chomp
-   if am.is_integer?
+   if (am.is_integer? and am.to_i >= 0)
      amount = am.to_i
    else
-     puts "ERROR: AMOUNT MUST BE AN INTEGER. PLEASE ENTER A DIFFERENT AMOUNT:"
+     puts "ERROR: AMOUNT MUST BE AN INTEGER AND POSITIVE. PLEASE ENTER A DIFFERENT AMOUNT:"
      get_amount
    end
  end
