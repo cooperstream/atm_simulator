@@ -1,6 +1,6 @@
-require_relative 'helpers'
+# encoding: UTF-8
 class Customer
-include Helpers
+
  attr_accessor :account, :password, :name, :balance
 
  def initialize(account = " ", password = " " , name= " ", balance= " ")
@@ -11,35 +11,28 @@ include Helpers
  end
 
  def get_account
-   puts "Please Enter Your Account Number: "
    acc = gets.chomp
-   if is_integer?(acc)
-     account = acc.to_i
-   else
-     puts "ERROR: ACCOUNT NUMBER MUST BE AN INTEGER. PLEASE ENTER A DIFFERENT ACCOUNT NUMBER:"
-     get_account
-   end
+   account = acc.to_i
  end
 
- def existing_account?(config, account)
+ def existing_account?(config)
    config['accounts'].has_key?(account)
  end
 
  def get_password
-   puts "Please Enter Your Password: "
    pass = gets
    pasword = pass.chomp
  end
 
- def verified_password?(config, account, password)
+ def verified_password?(config)
    config['accounts'][account]['password'] == password
  end
 
- def get_name(config, account)
+ def get_name(config)
    name = config['accounts'][account]['name']
  end
 
- def get_balance(config, account)
+ def get_balance(config)
    balance = config['accounts'][account]['balance']
  end
 

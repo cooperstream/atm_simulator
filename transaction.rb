@@ -1,25 +1,30 @@
-require_relative 'helpers'
+# encoding: UTF-8
 class Transaction
-  include Helpers
- def get_amount
-   am = gets.chomp
-   if (is_integer?(am) and am.to_i >= 0)
-     amount = am.to_i
-   else
-     puts "ERROR: AMOUNT MUST BE AN INTEGER AND POSITIVE. PLEASE ENTER A DIFFERENT AMOUNT:"
-     get_amount
-   end
+
+ attr_accessor :amount
+
+ def initialize(amount= "")
+    @amount = amount
  end
 
- def sufficient_atm_balance?(amount, atm)
+ def get_amount
+   am = gets.chomp
+   amount = am.to_i
+ end
+
+ def is_positive?
+   amount >= 0
+ end
+
+ def sufficient_atm_balance?(atm)
    atm.balance >= amount
  end
 
- def sufficient_customer_balance?(amount, customer)
+ def sufficient_customer_balance?(customer)
    customer.balance >= amount
  end
 
- def can_be_composed?(amount, atm)
+ def can_be_composed?(atm)
    denomination = atm.banknotes.keys
    quantity = atm.banknotes.values
    unpaid_amount = amount
@@ -34,29 +39,7 @@ class Transaction
    unpaid_amount == 0
  end
 
- def check(config, atm, customer)
-   amount = get_amount
-     if !sufficient_customer_balance?(amount, customer)
-       puts "ERROR: INSUFFICIENT FUNDS!! PLEASE ENTER A DIFFERENT AMOUNT:"
-       check(config, atm, customer)
-     else
-        if !sufficient_atm_balance?(amount, atm)
-          puts "ERROR: THE MAXIMUM AMOUNT AVAILABLE IN THIS ATM IS $#{atm.balance}. PLEASE ENTER A DIFFERENT AMOUNT:"
-          check(config, atm, customer)
-        else
-           if !can_be_composed?(amount, atm)
-              puts "ERROR: THE AMOUNT YOU REQUESTED CANNOT BE COMPOSED FROM BILLS AVAILABLE IN THIS ATM. PLEASE ENTER A DIFFERENT AMOUNT:"
-              check(config, atm, customer)
-           else
-              withdrawal(config, amount, atm, customer)
-              puts "Your New Balance is $#{customer.balance}"
-              atm.menu(config,customer, self)
-           end
-        end
-     end
- end
-
- def withdrawal(config, amount, atm, customer)
+ def withdrawal(config, atm, customer)
    denomination = atm.banknotes.keys
    quantity = atm.banknotes.values
    unpaid_amount = amount
@@ -76,6 +59,7 @@ class Transaction
    customer.balance-= amount
    config['banknotes'] = atm.banknotes
    config['accounts'][customer.account]['balance'] = customer.balance
+   amount = 0
  end
 
 end

@@ -3,32 +3,7 @@ require 'yaml'
 require_relative 'customer'
 require_relative 'transaction'
 
-
-def start(config)
-  atm = ATM.new()
-  customer = Customer.new()
-  transaction = Transaction.new
-  atm.banknotes = atm.get_banknotes(config)
-  customer.account = customer.get_account
-   if customer.existing_account?(config, customer.account)
-     customer.password = customer.get_password
-     if customer.verified_password?(config, customer.account, customer.password)
-       customer.name = customer.get_name(config, customer.account)
-       customer.balance = customer.get_balance(config, customer.account)
-       puts "Hello, #{customer.name}!"
-       atm.menu(config, customer, transaction)
-     else
-       puts "ERROR: ACCOUNT NUMBER AND PASSWORD DON'T MATCH"
-       start(config)
-     end
-   else
-     puts "ERROR: ACCOUNT NUMBER NOT FOUND"
-     start(config)
-   end
- end
-
 class ATM
-
  attr_accessor :banknotes
 
  def initialize(banknotes= "")
@@ -36,7 +11,7 @@ class ATM
  end
 
  def get_banknotes(config)
-   banknotes = config['banknotes']
+    banknotes = config['banknotes']
  end
 
  def balance
@@ -49,7 +24,34 @@ class ATM
   balance
  end
 
- def menu(config,customer, transaction)
+end
+
+def start(config)
+  atm = ATM.new()
+  customer = Customer.new()
+  transaction = Transaction.new()
+  atm.banknotes = atm.get_banknotes(config)
+  puts "Please Enter Your Account Number: "
+  customer.account = customer.get_account
+   if customer.existing_account?(config)
+     puts "Please Enter Your Password: "
+     customer.password = customer.get_password
+     if customer.verified_password?(config)
+       customer.name = customer.get_name(config)
+       customer.balance = customer.get_balance(config)
+       puts "Hello, #{customer.name}!"
+       menu(config, atm, customer, transaction)
+     else
+       puts "ERROR: ACCOUNT NUMBER AND PASSWORD DON'T MATCH"
+       start(config)
+     end
+   else
+     puts "ERROR: ACCOUNT NUMBER NOT FOUND"
+     start(config)
+   end
+ end
+
+def menu(config, atm, customer, transaction)
    puts "Please Choose From the Following Options:
    1. Display Balance
    2. Withdraw
@@ -58,22 +60,45 @@ class ATM
     case(choise)
        when(1)
           puts "Your Current Balance is $#{customer.balance}"
-          menu(config,customer, transaction)
+          menu(config, atm, customer, transaction)
        when(2)
           puts "Enter Amount You Wish to Withdraw: "
-          transaction.check(config, self, customer)
+          withdrawl_check(config, atm, customer, transaction)
        when(3)
           puts "#{customer.name}, Thank You For Using Our ATM. Good-Bye!"
           start(config)
        else
           puts "ERROR"
-          menu(config,customer, transaction)
-    end
-  end
-
+          menu(config, atm, customer, transaction)
+       end
 end
 
-
+def withdrawl_check(config, atm, customer, transaction)
+  transaction.amount = transaction.get_amount
+  if !transaction.is_positive?
+    puts "ERROR: AMOUNT MUST BE AN POSITIVE!! PLEASE ENTER A DIFFERENT AMOUNT:"
+    withdrawl_check(config, atm, customer, transaction)
+  else
+    if !transaction.sufficient_customer_balance?(customer)
+      puts "ERROR: INSUFFICIENT FUNDS!! PLEASE ENTER A DIFFERENT AMOUNT:"
+      withdrawl_check(config, atm, customer, transaction)
+    else
+      if !transaction.sufficient_atm_balance?(atm)
+        puts "ERROR: THE MAXIMUM AMOUNT AVAILABLE IN THIS ATM IS $#{atm.balance}. PLEASE ENTER A DIFFERENT AMOUNT:"
+        withdrawl_check(config, atm, customer, transaction)
+      else
+        if !transaction.can_be_composed?(atm)
+          puts "ERROR: THE AMOUNT YOU REQUESTED CANNOT BE COMPOSED FROM BILLS AVAILABLE IN THIS ATM. PLEASE ENTER A DIFFERENT AMOUNT:"
+          withdrawl_check(config, atm, customer, transaction)
+        else
+          transaction.withdrawal(config, atm, customer)
+          puts "Your New Balance is $#{customer.balance}"
+          menu(config, atm, customer, transaction)
+        end
+      end
+    end
+  end
+end
 
 config = YAML.load_file(ARGV.first || 'config.yml')
 start(config)
