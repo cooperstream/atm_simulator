@@ -4,7 +4,7 @@ class Customer
  attr_accessor :account, :password, :name, :balance
 
  def initialize(account = " ", password = " " , name= " ", balance= " ")
-  @accont = account
+  @account = account
   @password = password
   @name = name
   @balance = balance

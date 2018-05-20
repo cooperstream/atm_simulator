@@ -62,6 +62,7 @@ def menu(config, atm, customer, transaction)
           puts "Your Current Balance is $#{customer.balance}"
           menu(config, atm, customer, transaction)
        when(2)
+          transaction = Withdrawal.new()
           puts "Enter Amount You Wish to Withdraw: "
           withdrawl_check(config, atm, customer, transaction)
        when(3)
@@ -91,7 +92,7 @@ def withdrawl_check(config, atm, customer, transaction)
           puts "ERROR: THE AMOUNT YOU REQUESTED CANNOT BE COMPOSED FROM BILLS AVAILABLE IN THIS ATM. PLEASE ENTER A DIFFERENT AMOUNT:"
           withdrawl_check(config, atm, customer, transaction)
         else
-          transaction.withdrawal(config, atm, customer)
+          transaction.complete(config, atm, customer)
           puts "Your New Balance is $#{customer.balance}"
           menu(config, atm, customer, transaction)
         end

@@ -16,6 +16,10 @@ class Transaction
    amount >= 0
  end
 
+end
+
+class Withdrawal < Transaction
+  
  def sufficient_atm_balance?(atm)
    atm.balance >= amount
  end
@@ -39,7 +43,7 @@ class Transaction
    unpaid_amount == 0
  end
 
- def withdrawal(config, atm, customer)
+ def complete(config, atm, customer)
    denomination = atm.banknotes.keys
    quantity = atm.banknotes.values
    unpaid_amount = amount
