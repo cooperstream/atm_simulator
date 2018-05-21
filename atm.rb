@@ -60,7 +60,8 @@ def menu(config, atm, customer, transaction)
        when(2)
           transaction = Withdrawal.new()
           puts "Enter Amount You Wish to Withdraw: "
-          amount_check(config, atm, customer, transaction)
+          withdrawl_check(config, atm, customer, transaction)
+
        when(3)
           puts "#{customer.name}, Thank You For Using Our ATM. Good-Bye!"
           start(config)
@@ -77,20 +78,20 @@ def amount_check(config, atm, customer, transaction)
     amount_check(config, atm, customer, transaction)
   else
     transaction.amount = transaction.get_amount
-    withdrawl_check(config, atm, customer, transaction)
   end
 end
 
 def withdrawl_check(config, atm, customer, transaction)
+  amount_check(config, atm, customer, transaction)
   if !transaction.sufficient_customer_balance?(customer)
     puts "ERROR: INSUFFICIENT FUNDS!! PLEASE ENTER A DIFFERENT AMOUNT:"
-    amount_check(config, atm, customer, transaction)
+    withdrawl_check(config, atm, customer, transaction)
   elsif !transaction.sufficient_atm_balance?(atm)
     puts "ERROR: THE MAXIMUM AMOUNT AVAILABLE IN THIS ATM IS $#{atm.balance}. PLEASE ENTER A DIFFERENT AMOUNT:"
-    amount_check(config, atm, customer, transaction)
+    withdrawl_check(config, atm, customer, transaction)
   elsif !transaction.can_be_composed?(atm)
     puts "ERROR: THE AMOUNT YOU REQUESTED CANNOT BE COMPOSED FROM BILLS AVAILABLE IN THIS ATM. PLEASE ENTER A DIFFERENT AMOUNT:"
-    amount_check(config, atm, customer, transaction)
+    withdrawl_check(config, atm, customer, transaction)
   else
     transaction.complete(config, atm, customer)
     transaction = Transaction.new()

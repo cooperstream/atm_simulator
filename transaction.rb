@@ -12,7 +12,8 @@ class Transaction
  end
 
  def get_string_amount
-  amount = gets.chomp
+  am = gets.chomp
+  amount = am
  end
 
  def get_amount
