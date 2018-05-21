@@ -15,12 +15,8 @@ class ATM
  end
 
  def balance
-  denomination = banknotes.keys
-  quantity = banknotes.values
   balance = 0
-    (0..denomination.length-1).each do |i|
-      balance+= denomination[i]*quantity[i]
-     end
+  banknotes.each {|denomination, quantity| balance+= denomination*quantity}
   balance
  end
 
@@ -77,29 +73,25 @@ end
 def withdrawl_check(config, atm, customer, transaction)
   transaction.amount = transaction.get_amount
   if !transaction.is_positive?
-    puts "ERROR: AMOUNT MUST BE AN POSITIVE!! PLEASE ENTER A DIFFERENT AMOUNT:"
+    puts "ERROR: THE AMOUNT MUST BE POSITIVE!! PLEASE ENTER A DIFFERENT AMOUNT:"
+    withdrawl_check(config, atm, customer, transaction)
+  elsif !transaction.sufficient_customer_balance?(customer)
+    puts "ERROR: INSUFFICIENT FUNDS!! PLEASE ENTER A DIFFERENT AMOUNT:"
+    withdrawl_check(config, atm, customer, transaction)
+  elsif !transaction.sufficient_atm_balance?(atm)
+    puts "ERROR: THE MAXIMUM AMOUNT AVAILABLE IN THIS ATM IS $#{atm.balance}. PLEASE ENTER A DIFFERENT AMOUNT:"
+    withdrawl_check(config, atm, customer, transaction)
+  elsif !transaction.can_be_composed?(atm)
+    puts "ERROR: THE AMOUNT YOU REQUESTED CANNOT BE COMPOSED FROM BILLS AVAILABLE IN THIS ATM. PLEASE ENTER A DIFFERENT AMOUNT:"
     withdrawl_check(config, atm, customer, transaction)
   else
-    if !transaction.sufficient_customer_balance?(customer)
-      puts "ERROR: INSUFFICIENT FUNDS!! PLEASE ENTER A DIFFERENT AMOUNT:"
-      withdrawl_check(config, atm, customer, transaction)
-    else
-      if !transaction.sufficient_atm_balance?(atm)
-        puts "ERROR: THE MAXIMUM AMOUNT AVAILABLE IN THIS ATM IS $#{atm.balance}. PLEASE ENTER A DIFFERENT AMOUNT:"
-        withdrawl_check(config, atm, customer, transaction)
-      else
-        if !transaction.can_be_composed?(atm)
-          puts "ERROR: THE AMOUNT YOU REQUESTED CANNOT BE COMPOSED FROM BILLS AVAILABLE IN THIS ATM. PLEASE ENTER A DIFFERENT AMOUNT:"
-          withdrawl_check(config, atm, customer, transaction)
-        else
-          transaction.complete(config, atm, customer)
-          puts "Your New Balance is $#{customer.balance}"
-          menu(config, atm, customer, transaction)
-        end
-      end
-    end
+    transaction.complete(config, atm, customer)
+    transaction = Transaction.new()
+    puts "Your New Balance is $#{customer.balance}"
+    menu(config, atm, customer, transaction)
   end
 end
+
 
 config = YAML.load_file(ARGV.first || 'config.yml')
 start(config)
