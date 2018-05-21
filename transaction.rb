@@ -7,13 +7,16 @@ class Transaction
     @amount = amount
  end
 
- def get_amount
-   am = gets.chomp
-   amount = am.to_i
+ def is_positive_integer?
+   /\A\d+\z/.match(amount)
  end
 
- def is_positive?
-   amount >= 0
+ def get_string_amount
+  amount = gets.chomp
+ end
+
+ def get_amount
+  amount.to_i
  end
 
 end

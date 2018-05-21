@@ -60,30 +60,37 @@ def menu(config, atm, customer, transaction)
        when(2)
           transaction = Withdrawal.new()
           puts "Enter Amount You Wish to Withdraw: "
-          withdrawl_check(config, atm, customer, transaction)
+          amount_check(config, atm, customer, transaction)
        when(3)
           puts "#{customer.name}, Thank You For Using Our ATM. Good-Bye!"
           start(config)
        else
           puts "ERROR"
           menu(config, atm, customer, transaction)
-       end
+     end
+end
+
+def amount_check(config, atm, customer, transaction)
+  transaction.amount = transaction.get_string_amount
+  if !transaction.is_positive_integer?
+    puts "ERROR: THE AMOUNT MUST BE POSITIVE AND INTEGER!! PLEASE ENTER A DIFFERENT AMOUNT:"
+    amount_check(config, atm, customer, transaction)
+  else
+    transaction.amount = transaction.get_amount
+    withdrawl_check(config, atm, customer, transaction)
+  end
 end
 
 def withdrawl_check(config, atm, customer, transaction)
-  transaction.amount = transaction.get_amount
-  if !transaction.is_positive?
-    puts "ERROR: THE AMOUNT MUST BE POSITIVE!! PLEASE ENTER A DIFFERENT AMOUNT:"
-    withdrawl_check(config, atm, customer, transaction)
-  elsif !transaction.sufficient_customer_balance?(customer)
+  if !transaction.sufficient_customer_balance?(customer)
     puts "ERROR: INSUFFICIENT FUNDS!! PLEASE ENTER A DIFFERENT AMOUNT:"
-    withdrawl_check(config, atm, customer, transaction)
+    amount_check(config, atm, customer, transaction)
   elsif !transaction.sufficient_atm_balance?(atm)
     puts "ERROR: THE MAXIMUM AMOUNT AVAILABLE IN THIS ATM IS $#{atm.balance}. PLEASE ENTER A DIFFERENT AMOUNT:"
-    withdrawl_check(config, atm, customer, transaction)
+    amount_check(config, atm, customer, transaction)
   elsif !transaction.can_be_composed?(atm)
     puts "ERROR: THE AMOUNT YOU REQUESTED CANNOT BE COMPOSED FROM BILLS AVAILABLE IN THIS ATM. PLEASE ENTER A DIFFERENT AMOUNT:"
-    withdrawl_check(config, atm, customer, transaction)
+    amount_check(config, atm, customer, transaction)
   else
     transaction.complete(config, atm, customer)
     transaction = Transaction.new()
@@ -91,6 +98,7 @@ def withdrawl_check(config, atm, customer, transaction)
     menu(config, atm, customer, transaction)
   end
 end
+
 
 
 config = YAML.load_file(ARGV.first || 'config.yml')
