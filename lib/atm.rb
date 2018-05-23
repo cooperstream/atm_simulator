@@ -1,7 +1,6 @@
 # encoding: UTF-8
-
-
 class ATM
+  
  attr_accessor :banknotes
 
  def initialize(banknotes= "")
