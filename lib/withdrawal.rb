@@ -1,19 +1,19 @@
 # encoding: UTF-8
 class Withdrawal < Transaction
 
-def check_withdrawal(config, atm, customer)
+def withdrawal(config, atm, customer)
    if !sufficient_customer_balance?(customer)
      puts "ERROR: INSUFFICIENT FUNDS!! PLEASE ENTER A DIFFERENT AMOUNT:"
      check_amount
-     check_withdrawal(config, atm, customer)
+     withdrawal(config, atm, customer)
    elsif !sufficient_atm_balance?(atm)
      puts "ERROR: THE MAXIMUM AMOUNT AVAILABLE IN THIS ATM IS $#{atm.balance}. PLEASE ENTER A DIFFERENT AMOUNT:"
      check_amount
-     check_withdrawal(config, atm, customer)
+     withdrawal(config, atm, customer)
    elsif !can_be_composed?(atm)
      puts "ERROR: THE AMOUNT YOU REQUESTED CANNOT BE COMPOSED FROM BILLS AVAILABLE IN THIS ATM. PLEASE ENTER A DIFFERENT AMOUNT:"
      check_amount
-     check_withdrawal(config, atm, customer)
+     withdrawal(config, atm, customer)
    else
      complete(config, atm, customer)
      puts "Your New Balance is $#{customer.balance}"

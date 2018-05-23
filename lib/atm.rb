@@ -16,7 +16,7 @@ class ATM
  def start(config)
   customer = Customer.new()
   transaction = Transaction.new()
-  customer.check_account(config)
+  customer.verification(config)
   menu(config, customer, transaction)
  end
 
@@ -34,7 +34,7 @@ class ATM
      transaction = Withdrawal.new()
      puts "Enter Amount You Wish to Withdraw: "
      transaction.check_amount
-     transaction.check_withdrawal(config, self, customer)
+     transaction.withdrawal(config, self, customer)
      transaction = Transaction.new()
      menu(config, customer, transaction)
    when(3)

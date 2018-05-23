@@ -10,17 +10,17 @@ class Customer
   @balance = balance
  end
 
- def check_account(config)
+ def verification(config)
    puts "Please Enter Your Account Number: "
    @account = gets.chomp
    if !is_4digital?
      puts "ERROR: ACCOUNT NUMBER MUST BE 4-DIGITAL"
-     check_account(config)
+     verification(config)
    else
      @account = @account.to_i
      if !existing_account?(config)
        puts "ERROR: ACCOUNT NUMBER NOT FOUND"
-       check_account(config)
+       verification(config)
      else
        check_password(config)
      end
@@ -46,7 +46,7 @@ class Customer
    @password = gets.chomp
    if !verified_password?(config)
      puts "ERROR: ACCOUNT NUMBER AND PASSWORD DON'T MATCH"
-     check_account(config)
+     verification(config)
    else
      @name = config['accounts'][@account]['name']
      @balance = config['accounts'][@account]['balance']
