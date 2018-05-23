@@ -27,7 +27,7 @@ class Customer
    end
  end
 
- private
+ 
 
  def is_4digital?
    /\A\d+\z/.match(@account) and @account.length == 4
