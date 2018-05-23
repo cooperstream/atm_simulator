@@ -1,6 +1,6 @@
 # encoding: UTF-8
 class ATM
-  
+
  attr_accessor :banknotes
 
  def initialize(banknotes= "")
@@ -35,7 +35,6 @@ class ATM
      puts "Enter Amount You Wish to Withdraw: "
      transaction.check_amount
      transaction.check_withdrawal(config, self, customer)
-     transaction.complete(config, self, customer)
      transaction = Transaction.new()
      menu(config, customer, transaction)
    when(3)

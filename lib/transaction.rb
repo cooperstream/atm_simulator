@@ -7,10 +7,6 @@ class Transaction
     @amount = amount
  end
 
- def is_positive_integer?
-   /\A\d+\z/.match(@amount)
- end
-
  def check_amount
    @amount = gets.chomp
    if !is_positive_integer?
@@ -19,6 +15,12 @@ class Transaction
    else
      @amount = @amount.to_i
    end
+ end
+
+private
+
+ def is_positive_integer?
+   /\A\d+\z/.match(@amount)
  end
 
 end

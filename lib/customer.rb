@@ -10,18 +10,6 @@ class Customer
   @balance = balance
  end
 
- def is_4digital?
-   /\A\d+\z/.match(@account) and @account.length == 4
- end
-
- def existing_account?(config)
-   config['accounts'].has_key?(@account)
- end
-
- def verified_password?(config)
-   config['accounts'][@account]['password'] == @password
- end
-
  def check_account(config)
    puts "Please Enter Your Account Number: "
    @account = gets.chomp
@@ -37,6 +25,20 @@ class Customer
        check_password(config)
      end
    end
+ end
+
+ private
+
+ def is_4digital?
+   /\A\d+\z/.match(@account) and @account.length == 4
+ end
+
+ def existing_account?(config)
+   config['accounts'].has_key?(@account)
+ end
+
+ def verified_password?(config)
+   config['accounts'][@account]['password'] == @password
  end
 
  def check_password(config)
